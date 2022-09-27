@@ -56,10 +56,7 @@ def kaito(ans):
 
 if __name__ == "__main__":
     st = time.time()
-    li = ["A", "B", "C", "D", "E", "F", "G", "H",
-    "I", "J", "K", "L", "M", "N", "O", "P", "Q",
-    "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
-    ]
+    li = [chr(random.randint(65, 90))for _ in range(10)] 
     for _ in range(challenge):
         ans_li = shutudai(li)
         ans = kaito(ans_li)

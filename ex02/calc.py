@@ -7,7 +7,7 @@ def click_number(event):
     #tkm.showinfo(f"{num}", f"{num}のボタンが押されました")
     entry.insert(tk.END, num)
 
-def click_equal(evenet):
+def click_equal(event):
     eqn = entry.get()
     result = eval(eqn)
     entry.delete(0, tk.END)

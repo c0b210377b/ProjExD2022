@@ -18,7 +18,7 @@ def click_delete(event):
 
 den = tk.Tk()
 den.title("電卓")
-den.geometry("400x800")
+den.geometry("500x800")
 
 entry = tk.Entry(den, width = 10, font = ("", 40), justify = "right")
 entry.grid(row = 0, column = 0, columnspan = 3)
@@ -28,7 +28,7 @@ num_list = [7, 8, 9, 4, 5, 6, 1, 2, 3, 0, "00"]
 ope1_btn = ["."]
 for i, num in enumerate(num_list+ope1_btn, 1):
     button = tk.Button(den, text = f"{num}", 
-    font=("Times New Roman", 30), width = 4, height = 2)
+    font=("Times New Roman", 30), width = 4, height = 2, bg="white")
     button.bind("<1>", click_number)
     button.grid(row=r, column = c)
     c += 1
@@ -36,18 +36,18 @@ for i, num in enumerate(num_list+ope1_btn, 1):
         r += 1
         c = 0
 
-btn = tk.Button(den, text = "C", font = ("Times New Roman", 30), width = 4, height = 2)
+btn = tk.Button(den, text = "AC", font = ("Times New Roman", 30), width = 4, height = 2, bg="azure")
 btn.bind("<1>", click_delete)
-btn.grid(row = 0, column = 4)
+btn.grid(row = 2, column = 5)
 
 en_lst = ["+", "-", "*", "/"]
 for i, en in enumerate(en_lst, 2):
-    btn = tk.Button(den, text=en, font=("Times New Roman", 30), width = 4, height = 2)
+    btn = tk.Button(den, text=en, font=("Times New Roman", 30), width = 4, height = 2, bg="azure")
     btn.bind("<1>", click_number)
     btn.grid(row = i, column = 4)
 
-btn = tk.Button(den, text=f"=", font=("Times New Roman", 30), width = 4, height = 2)
+btn = tk.Button(den, text=f"=", font=("Times New Roman", 30), width = 4, height = 2, bg="azure")
 btn.bind("<1>", click_equal)
-btn.grid(row = r, column = c+4)
+btn.grid(row = 3, column = 5)
 
 den.mainloop()

@@ -1,10 +1,8 @@
 import tkinter as tk
-import tkinter.messagebox as tkm
 
 def click_number(event):
     btn = event.widget
     num = btn["text"]
-    #tkm.showinfo(f"{num}", f"{num}のボタンが押されました")
     entry.insert(tk.END, num)
 
 def click_equal(event):
@@ -46,7 +44,7 @@ for i, en in enumerate(en_lst, 2):
     btn.bind("<1>", click_number)
     btn.grid(row = i, column = 4)
 
-btn = tk.Button(den, text=f"=", font=("Times New Roman", 30), width = 4, height = 2, bg="azure")
+btn = tk.Button(den, text="=", font=("Times New Roman", 30), width = 4, height = 2, bg="azure")
 btn.bind("<1>", click_equal)
 btn.grid(row = 3, column = 5)
 

@@ -2,6 +2,10 @@ import tkinter as tk
 import tkinter.messagebox as tkm
 #from maze_maker import *
 
+def key_down(event):
+    global key
+    key = event.keysym
+    
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("迷えるこうかとん")
@@ -14,5 +18,7 @@ if __name__ == "__main__":
     canv.create_image(cx, cy, image=tori, tag="tori")
 
     key = ""
+
+    root.bind("<KeyPress>", key_down)
 
     root.mainloop()

@@ -2,6 +2,10 @@ import tkinter as tk
 import tkinter.messagebox as tkm
 #from maze_maker import *
 
+def key_up(event):
+    global key
+    key = ""
+
 def key_down(event):
     global key
     key = event.keysym
@@ -20,5 +24,6 @@ if __name__ == "__main__":
     key = ""
 
     root.bind("<KeyPress>", key_down)
+    root.bind("<KeyRelease>", key_up)
 
     root.mainloop()

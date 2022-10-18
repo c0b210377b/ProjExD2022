@@ -1,5 +1,7 @@
+import random
 import tkinter as tk
 from maze_maker import *
+import tkinter.messagebox as tkm
 
 def key_up(event):
     global key
@@ -20,9 +22,11 @@ def main_proc():
         mx -= 1
     if key == "Right":
         mx += 1
-
-    if maze_lst[my][mx] == 0:
+    if maze_lst[my][mx] == 0 or maze_lst[my][mx] == 2 or maze_lst[my][mx] == 3:
         cx, cy = mx*100+50, my*100+50
+        if maze_lst[my][mx] == 2:
+            
+            return
     else:
         if key == "Up":
             my += 1
@@ -32,7 +36,6 @@ def main_proc():
             mx += 1
         if key == "Right":
             mx -= 1
-        
     canv.coords("tori", cx, cy)
     root.after(80, main_proc)
     
@@ -44,11 +47,20 @@ if __name__ == "__main__":
     canv.pack()
 
     maze_lst = make_maze(15, 9)
+    rx = [1, 1, 7, 7]
+    ry = [1, 13, 1, 13]
+    r1 = random.randint(1, len(rx)-1)
+    maze_lst[rx.pop(r1)][ry.pop(r1)] = 2
+    r1 = random.randint(1, len(rx)-1)
+    maze_lst[rx[r1]][ry[r1]] = 3
+    
     show_maze(canv, maze_lst)
 
-    tori = tk.PhotoImage(file="./ex03/fig/9.png")
-    cx, cy = 300, 400
-    mx, my = 1, 1
+    r = random.randint(1, 9)
+    tori = tk.PhotoImage(file=f"./ex03/fig/{r}.png")
+    cx, cy = 0, 0
+    mx, my = ry[r1], rx[r1]
+
     canv.create_image(cx, cy, image=tori, tag="tori")
 
     key = ""

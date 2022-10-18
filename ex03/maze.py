@@ -10,17 +10,20 @@ def key_down(event):
     key = event.keysym
 
 def main_proc():
+    global mx, my
     global cx, cy
     if key == "Up":
-        cy -= 20
+        my -= 1
     if key == "Down":
-        cy += 20
+        my += 1
     if key == "Left":
-        cx -= 20
+        mx -= 1
     if key == "Right":
-        cx += 20
+        mx += 1
+    cx, cy = mx*100+50, my*100+50
+
     canv.coords("tori", cx, cy)
-    root.after(100, main_proc)
+    root.after(80, main_proc)
     
 if __name__ == "__main__":
     root = tk.Tk()
@@ -29,10 +32,13 @@ if __name__ == "__main__":
     canv = tk.Canvas(root, width=1500, height=900, bg="black")
     canv.pack()
 
-    tori = tk.PhotoImage(file="./ex03/fig/6.png")
+    maze_lst = make_maze(15, 9)
+    show_maze(canv, maze_lst)
+
+    tori = tk.PhotoImage(file="./ex03/fig/9.png")
     cx, cy = 300, 400
+    mx, my = 1, 1
     canv.create_image(cx, cy, image=tori, tag="tori")
-    
 
     key = ""
 
@@ -40,9 +46,5 @@ if __name__ == "__main__":
     root.bind("<KeyRelease>", key_up)
 
     main_proc()
-
-    maze_lst = make_maze(15, 9)
-    #print(maze_lst)
-    show_maze(canv, maze_lst)
 
     root.mainloop()

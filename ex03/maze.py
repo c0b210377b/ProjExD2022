@@ -22,11 +22,13 @@ def main_proc():
         mx -= 1
     if key == "Right":
         mx += 1
-    if maze_lst[my][mx] == 0 or maze_lst[my][mx] == 2 or maze_lst[my][mx] == 3:
+    if maze_lst[my][mx] == 0 or maze_lst[my][mx] == 3:
         cx, cy = mx*100+50, my*100+50
-        if maze_lst[my][mx] == 2:
-            
-            return
+    elif maze_lst[my][mx] == 2:
+        cx, cy = mx*100+50, my*100+50
+        canv.coords("tori", cx, cy)
+        tkm.showinfo("ショボメッセ", "ｺﾞｰﾙｱﾒﾃﾞﾄｰ")
+        return
     else:
         if key == "Up":
             my += 1

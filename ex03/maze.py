@@ -30,7 +30,7 @@ def main_proc():    #メインの関数
     elif maze_lst[my][mx] == 2:
         cx, cy = mx*100+50, my*100+50
         canv.coords("tori", cx, cy)
-        tkm.showinfo("ショボメッセ", "ｺﾞｰﾙｱﾒﾃﾞﾄｰ")
+        tkm.showinfo("goal", "ｺﾞｰﾙｵﾒﾃﾞﾄｰ")
         return
     #壁の時の処理
     else:
@@ -57,7 +57,8 @@ if __name__ == "__main__":
     rx = [1, 1, 7, 7]
     ry = [1, 13, 1, 13]
     r1 = random.randint(1, len(rx)-1)       #ランダム関数を定義 
-    maze_lst[rx.pop(r1)][ry.pop(r1)] = 2    #ランダムでゴール地点を設定
+    rxr, ryr = rx.pop(r1), ry.pop(r1)
+    maze_lst[rxr][ryr] = 2                  #ランダムでゴール地点を設定
     r1 = random.randint(1, len(rx)-1)       #ランダム関数を再定義
     maze_lst[rx[r1]][ry[r1]] = 3            #ランダムでスタート地点を設定
     

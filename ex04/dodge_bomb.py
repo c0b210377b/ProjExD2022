@@ -33,16 +33,17 @@ def main():
     kfc = pg.image.load("./ex04/KFC.jpg")           #カーネルサンダース画像
     kfc = pg.transform.rotozoom(kfc, 0, 0.3)
     kfc_r = kfc.get_rect()
-    kfc_r.centerx, kfc_r.centery = rm.randint(0, scrn_r.width-100), rm.randint(0, scrn_r.height-100)
+    kfc_r.centerx, kfc_r.centery = rm.randint(100, scrn_r.width-100), rm.randint(100, scrn_r.height-100)
 
     chicken = pg.image.load("./ex04/chicken_honetsuki.png")
-    chicken
+    chicken = pg.transform.rotozoom(chicken, 0, 0.8)
+    c_r = chicken.get_rect()
 
     bomb = pg.Surface((20, 20))
     pg.draw.circle(bomb, (255, 0, 0), (10, 10), 10) #円を描く
     bomb.set_colorkey((0, 0, 0))                    #四隅の黒い部分を等価させる
     bomb_r = bomb.get_rect()
-    bomb_r.centerx, bomb_r.centery = rm.randint(0, scrn_r.width-100), rm.randint(0, scrn_r.height-100)
+    bomb_r.centerx, bomb_r.centery = rm.randint(100, scrn_r.width-100), rm.randint(100, scrn_r.height-100)
 
     vx, vy = +1, +1
     cx, cy = +1, +1
@@ -60,49 +61,51 @@ def main():
         key_state = pg.key.get_pressed()
 
         if key_state[pg.K_UP]:          #こうかとんの縦座標を-1
-            tori_r.centery -= 1
+            tori_r.centery -= 3
         if key_state[pg.K_DOWN]:        #こうかとんの縦座標を+1
-            tori_r.centery += 1
+            tori_r.centery += 3
         if key_state[pg.K_LEFT]:        #こうかとんの横座標を-1
-            tori_r.centerx -= 1
+            tori_r.centerx -= 3
         if key_state[pg.K_RIGHT]:       #こうかとんの横座標を+1
-            tori_r.centerx += 1
+            tori_r.centerx += 3
         
         yoko, tate = check_bound(tori_r, scrn_r)
         if yoko == -1:
             if key_state[pg.K_LEFT]:
-                tori_r.centerx += 1
+                tori_r.centerx += 3
             if key_state[pg.K_RIGHT]:
-                tori_r.centerx -=1
+                tori_r.centerx -= 3
 
         if tate == -1:
             if key_state[pg.K_UP]:
-                tori_r.centery += 1
+                tori_r.centery += 3
             if key_state[pg.K_DOWN]:
-                tori_r.centery -=1
+                tori_r.centery -= 3
         scrn.blit(tori, tori_r)         #スクリーンにこうかとんを貼る
 
         yoko, tate = check_bound(bomb_r, scrn_r)
         vx *= yoko
-        vx *= 1.0002
+        vx *= 1.00003                   #横方向に加速 
         vy *= tate
-        vy *= 1.0002
+        vy *= 1.0003                    #縦方向に加速
         bomb_r.move_ip(vx, vy)
         scrn.blit(bomb, bomb_r)         #スクリーンに爆弾を貼る
-
+        
         yoko, tate = check_bound(kfc_r, scrn_r)
         cx *= yoko
-        cx *= 1.0002
+        cx *= 1.0004                    #横方向に加速
         cy *= tate
-        cy *= 1.0002
+        cy *= 1.0003                    #縦方向に加速
         kfc_r.move_ip(cx, cy)
         scrn.blit(kfc, kfc_r)           #スクリーンにKFCを貼る
-
-        if tori_r.colliderect(bomb_r) or tori_r.colliderect(kfc_r):  #こうかとんと爆弾が重なったら
+        
+        if tori_r.colliderect(bomb_r):  #こうかとんと爆弾が重なったら 
             return
-
-        #if tori_r.colliderect(kfc_r):
-
+        
+        if tori_r.colliderect(kfc_r):
+            scrn.blit(chicken, (tori_r.centerx - 100, tori_r.centery - 100))
+            clock.tick(10)
+            
 
         if key_state[pg.K_r]:           #やり直し機能
             main()
@@ -110,7 +113,6 @@ def main():
 
         pg.display.update()
         clock.tick(1000)
-                
 
 if __name__ == "__main__":
     pg.init()   #ゲーム初期化

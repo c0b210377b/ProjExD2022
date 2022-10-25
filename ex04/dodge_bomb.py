@@ -41,7 +41,7 @@ def main():
 
     bomb = pg.Surface((20, 20))
     pg.draw.circle(bomb, (255, 0, 0), (10, 10), 10) #円を描く
-    bomb.set_colorkey((0, 0, 0))                    #四隅の黒い部分を等価させる
+    bomb.set_colorkey((0, 0, 0))                    #四隅の黒い部分を透過させる
     bomb_r = bomb.get_rect()
     bomb_r.centerx, bomb_r.centery = rm.randint(100, scrn_r.width-100), rm.randint(100, scrn_r.height-100)
 
@@ -60,13 +60,13 @@ def main():
 
         key_state = pg.key.get_pressed()
 
-        if key_state[pg.K_UP]:          #こうかとんの縦座標を-1
+        if key_state[pg.K_UP]:          #こうかとんの縦座標を-3
             tori_r.centery -= 3
-        if key_state[pg.K_DOWN]:        #こうかとんの縦座標を+1
+        if key_state[pg.K_DOWN]:        #こうかとんの縦座標を+3
             tori_r.centery += 3
-        if key_state[pg.K_LEFT]:        #こうかとんの横座標を-1
+        if key_state[pg.K_LEFT]:        #こうかとんの横座標を-3
             tori_r.centerx -= 3
-        if key_state[pg.K_RIGHT]:       #こうかとんの横座標を+1
+        if key_state[pg.K_RIGHT]:       #こうかとんの横座標を+3
             tori_r.centerx += 3
         
         yoko, tate = check_bound(tori_r, scrn_r)
@@ -85,7 +85,7 @@ def main():
 
         yoko, tate = check_bound(bomb_r, scrn_r)
         vx *= yoko
-        vx *= 1.00003                   #横方向に加速 
+        vx *= 1.0005                   #横方向に加速 
         vy *= tate
         vy *= 1.0003                    #縦方向に加速
         bomb_r.move_ip(vx, vy)
@@ -102,7 +102,7 @@ def main():
         if tori_r.colliderect(bomb_r):  #こうかとんと爆弾が重なったら終了
             return
         
-        if tori_r.colliderect(kfc_r):   #こうかとんとKFCが重なったも終わらないけど。。。
+        if tori_r.colliderect(kfc_r):   #こうかとんとKFCが重なったら骨付き肉になる
             scrn.blit(chicken, (tori_r.centerx - 100, tori_r.centery - 100))
             clock.tick(10)
             

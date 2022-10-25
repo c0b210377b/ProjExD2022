@@ -33,21 +33,24 @@ def main():
     kfc = pg.image.load("./ex04/KFC.jpg")           #カーネルサンダース画像
     kfc = pg.transform.rotozoom(kfc, 0, 0.3)
     kfc_r = kfc.get_rect()
-    kfc_r.center = rm.randint(0, scrn_r.width), rm.randint(0, scrn_r.height)
+    kfc_r.centerx, kfc_r.centery = rm.randint(0, scrn_r.width-100), rm.randint(0, scrn_r.height-100)
+
+    chicken = pg.image.load("./ex04/chicken_honetsuki.png")
+    chicken
 
     bomb = pg.Surface((20, 20))
     pg.draw.circle(bomb, (255, 0, 0), (10, 10), 10) #円を描く
     bomb.set_colorkey((0, 0, 0))                    #四隅の黒い部分を等価させる
     bomb_r = bomb.get_rect()
-    bomb_r.centerx, bomb_r.centery = rm.randint(0, scrn_r.width), rm.randint(0, scrn_r.height)
+    bomb_r.centerx, bomb_r.centery = rm.randint(0, scrn_r.width-100), rm.randint(0, scrn_r.height-100)
 
     vx, vy = +1, +1
+    cx, cy = +1, +1
 
     clock =  pg.time.Clock()    
 
     while True:
-        scrn.blit(back, back_r)         #スクリーンに背景を貼る
-        scrn.blit(kfc, kfc_r)      
+        scrn.blit(back, back_r)         #スクリーンに背景を貼る    
 
         #終了イベントの処理
         for event in pg.event.get():    
@@ -81,17 +84,30 @@ def main():
 
         yoko, tate = check_bound(bomb_r, scrn_r)
         vx *= yoko
+        vx *= 1.0002
         vy *= tate
+        vy *= 1.0002
         bomb_r.move_ip(vx, vy)
         scrn.blit(bomb, bomb_r)         #スクリーンに爆弾を貼る
 
-        if tori_r.colliderect(bomb_r):  #こうかとんと爆弾が重なったら
+        yoko, tate = check_bound(kfc_r, scrn_r)
+        cx *= yoko
+        cx *= 1.0002
+        cy *= tate
+        cy *= 1.0002
+        kfc_r.move_ip(cx, cy)
+        scrn.blit(kfc, kfc_r)           #スクリーンにKFCを貼る
+
+        if tori_r.colliderect(bomb_r) or tori_r.colliderect(kfc_r):  #こうかとんと爆弾が重なったら
             return
+
+        #if tori_r.colliderect(kfc_r):
+
 
         if key_state[pg.K_r]:           #やり直し機能
             main()
             return
-        
+
         pg.display.update()
         clock.tick(1000)
                 

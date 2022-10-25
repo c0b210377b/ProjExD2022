@@ -15,18 +15,15 @@ def main():
     tori = pg.image.load(f"./ex04/fig/{r}.png") 
     tori = pg.transform.rotozoom(tori, 0, 2)
     tori_r = tori.get_rect()
-    tori_r.center = 800, 450
+    tori_r.center = 900, 400
 
     kfc = pg.image.load("./ex04/KFC.jpg")
-    kfc = pg.transform.rotozoom(kfc, 0, 0.25)
+    kfc = pg.transform.rotozoom(kfc, 0, 0.3)
 
-    key_lst = pg.key.get_pressed()
-    
+    clock =  pg.time.Clock()    #練習1
 
     while True:
-        pg.display.update()
-        pg.time.Clock().tick(1000)
-        scrn.blit(back, back_r)
+        scrn.blit(back, back_r)         #スクリーンにこうかとんを貼る
         scrn.blit(tori, tori_r)
         scrn.blit(kfc, (200, 500))
 
@@ -34,9 +31,19 @@ def main():
             if event.type == pg.QUIT:
                 return
 
-            # if event.type == pg.KEYDOWN:
-            #     if event.key == pg.K_x:
-            #         return
+        key_state = pg.key.get_pressed()
+        if key_state[pg.K_UP]:          #こうかとんの縦座標を-1
+            tori_r.centery -= 1
+        if key_state[pg.K_DOWN]:        #こうかとんの縦座標を+1
+            tori_r.centery += 1
+        if key_state[pg.K_LEFT]:        #こうかとんの横座標を-1
+            tori_r.centerx -= 1
+        if key_state[pg.K_RIGHT]:       #こうかとんの横座標を+1
+            tori_r.centerx += 1
+
+        
+        pg.display.update()
+        clock.tick(1000)
                 
 
 if __name__ == "__main__":

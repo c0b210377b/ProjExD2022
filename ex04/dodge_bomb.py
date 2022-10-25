@@ -2,6 +2,19 @@ import random as rm
 import pygame as pg
 import sys
 
+def check_bound(obj_r, scrn_r):
+    """
+    obj_r  : こうかとん_r または 爆弾_r
+    scrn_r : スクリーン_r
+    領域内：+1 / 領域外: -1
+    """
+
+    yoko, tate = +1, +1
+    if obj_r.left < scrn_r.left or scrn_r.right < obj_r.right:
+        yoko = -1
+    if obj_r.top < scrn_r.top or scrn_r.bottom < obj_r.bottom:
+        tate = -1
+    return yoko, tate
 
 def main():
     pg.display.set_caption("KFCから逃げろやｯｯ!!こうかとん")
@@ -17,8 +30,10 @@ def main():
     tori_r = tori.get_rect()
     tori_r.center = 900, 400
 
-    kfc = pg.image.load("./ex04/KFC.jpg")           #カーネルサンダース
+    kfc = pg.image.load("./ex04/KFC.jpg")           #カーネルサンダース画像
     kfc = pg.transform.rotozoom(kfc, 0, 0.3)
+    kfc_r = kfc.get_rect()
+    kfc_r.center = rm.randint(0, scrn_r.width), rm.randint(0, scrn_r.height)
 
     bomb = pg.Surface((20, 20))
     pg.draw.circle(bomb, (255, 0, 0), (10, 10), 10) #円を描く
@@ -32,14 +47,15 @@ def main():
 
     while True:
         scrn.blit(back, back_r)         #スクリーンに背景を貼る
-        scrn.blit(kfc, (200, 500))      
+        scrn.blit(kfc, kfc_r)      
 
+        #終了イベントの処理
         for event in pg.event.get():    
-            #終了イベントの処理
             if event.type == pg.QUIT:
                 return
 
         key_state = pg.key.get_pressed()
+
         if key_state[pg.K_UP]:          #こうかとんの縦座標を-1
             tori_r.centery -= 1
         if key_state[pg.K_DOWN]:        #こうかとんの縦座標を+1
@@ -48,8 +64,24 @@ def main():
             tori_r.centerx -= 1
         if key_state[pg.K_RIGHT]:       #こうかとんの横座標を+1
             tori_r.centerx += 1
+        
+        yoko, tate = check_bound(tori_r, scrn_r)
+        if yoko == -1:
+            if key_state[pg.K_LEFT]:
+                tori_r.centerx += 1
+            if key_state[pg.K_RIGHT]:
+                tori_r.centerx -=1
+
+        if tate == -1:
+            if key_state[pg.K_UP]:
+                tori_r.centery += 1
+            if key_state[pg.K_DOWN]:
+                tori_r.centery -=1
         scrn.blit(tori, tori_r)         #スクリーンにこうかとんを貼る
 
+        yoko, tate = check_bound(bomb_r, scrn_r)
+        vx *= yoko
+        vy *= tate
         bomb_r.move_ip(vx, vy)
         scrn.blit(bomb, bomb_r)         #スクリーンに爆弾を貼る
 

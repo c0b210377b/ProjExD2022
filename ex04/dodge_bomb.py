@@ -85,6 +85,9 @@ def main():
         bomb_r.move_ip(vx, vy)
         scrn.blit(bomb, bomb_r)         #スクリーンに爆弾を貼る
 
+        if tori_r.colliderect(bomb_r):  #こうかとんと爆弾が重なったら
+            return
+
         if key_state[pg.K_r]:           #やり直し機能
             main()
             return

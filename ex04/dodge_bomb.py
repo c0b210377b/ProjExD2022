@@ -4,8 +4,9 @@ import sys
 
 
 def main():
-    pg.display.set_caption("初めてのPyGame")
+    pg.display.set_caption("KFCから逃げろやｯｯ!!こうかとん")
     scrn = pg.display.set_mode((1600, 900))
+    
     r = rm.randint(0, 9)
     kfc = pg.image.load("./ex04/KFC.jpg")
     back = pg.image.load("./ex04/pg_bg.jpg")

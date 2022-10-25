@@ -99,10 +99,10 @@ def main():
         kfc_r.move_ip(cx, cy)
         scrn.blit(kfc, kfc_r)           #スクリーンにKFCを貼る
         
-        if tori_r.colliderect(bomb_r):  #こうかとんと爆弾が重なったら 
+        if tori_r.colliderect(bomb_r):  #こうかとんと爆弾が重なったら終了
             return
         
-        if tori_r.colliderect(kfc_r):
+        if tori_r.colliderect(kfc_r):   #こうかとんとKFCが重なったも終わらないけど。。。
             scrn.blit(chicken, (tori_r.centerx - 100, tori_r.centery - 100))
             clock.tick(10)
             

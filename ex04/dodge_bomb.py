@@ -26,13 +26,16 @@ def main():
     bomb_r = bomb.get_rect()
     bomb_r.centerx, bomb_r.centery = rm.randint(0, scrn_r.width), rm.randint(0, scrn_r.height)
 
+    vx, vy = +1, +1
+
     clock =  pg.time.Clock()    
 
     while True:
         scrn.blit(back, back_r)         #スクリーンに背景を貼る
         scrn.blit(kfc, (200, 500))      
 
-        for event in pg.event.get():
+        for event in pg.event.get():    
+            #終了イベントの処理
             if event.type == pg.QUIT:
                 return
 
@@ -47,7 +50,12 @@ def main():
             tori_r.centerx += 1
         scrn.blit(tori, tori_r)         #スクリーンにこうかとんを貼る
 
-        scrn.blit(bomb, bomb_r)
+        bomb_r.move_ip(vx, vy)
+        scrn.blit(bomb, bomb_r)         #スクリーンに爆弾を貼る
+
+        if key_state[pg.K_r]:           #やり直し機能
+            main()
+            return
         
         pg.display.update()
         clock.tick(1000)
@@ -55,6 +63,6 @@ def main():
 
 if __name__ == "__main__":
     pg.init()   #ゲーム初期化
-    main()      #
-    pg.quit()   #
-    sys.exit()  #
+    main()      #ゲーム本体
+    pg.quit()   #初期化の解除
+    sys.exit()  

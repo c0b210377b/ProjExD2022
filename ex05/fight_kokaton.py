@@ -3,7 +3,6 @@ import pygame as pg
 import sys
 import os
 
-# パス名の
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 # 画面を生成するクラス
@@ -20,8 +19,9 @@ class Screen:
 
 # こうかとんを設定を行うクラス
 class Bird:
+    # 移動速度を1から3に
     key_delta = {
-    pg.K_UP:    [0, -3],
+    pg.K_UP:    [0, -3],    
     pg.K_DOWN:  [0, +3],
     pg.K_LEFT:  [-3, 0],
     pg.K_RIGHT: [+3, 0],

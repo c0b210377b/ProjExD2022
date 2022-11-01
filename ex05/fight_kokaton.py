@@ -5,18 +5,19 @@ import os
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
+# 画面を生成するクラス
 class Screen:
     def __init__(self, title, wh, bg_image):
-        pg.display.set_caption(title)       # "逃げろ！こうかとん"    
-        self.sfc = pg.display.set_mode(wh)    # (1600, 900)
+        pg.display.set_caption(title)       
+        self.sfc = pg.display.set_mode(wh)    
         self.rct = self.sfc.get_rect()
-        self.bgi_sfc = pg.image.load(bg_image)    # "./ex05/pg_bg.jpg"
+        self.bgi_sfc = pg.image.load(bg_image)   
         self.bgi_rct = self.bgi_sfc.get_rect()
 
     def blit(self):
         self.sfc.blit(self.bgi_sfc, self.bgi_rct)
 
-
+# こうかとんを設定を行うクラス
 class Bird:
     key_delta = {
     pg.K_UP:    [0, -3],
@@ -45,7 +46,7 @@ class Bird:
                     self.rct.centery -= delta[1]
         self.blit(scr)
 
-
+# 爆弾の設定を行うクラス
 class Bomb:
     def __init__(self, color, radius, vxy, scr:Screen):
         self.sfc = pg.Surface((2*radius, 2*radius)) # 空のSurface
@@ -66,7 +67,7 @@ class Bomb:
         self.vy *= tate * 1.0003
         self.blit(scr)
 
-
+# 爆弾以外の動く物体の設定を行うクラス
 class Rival:
     def __init__(self, image, zoom, xy, scr:Screen):
         sfc = pg.image.load(image)
@@ -101,6 +102,7 @@ def check_bound(obj_r, scrn_r):
         tate = -1
     return yoko, tate
 
+# BGMや効果音をロードする関数
 def load_sound(file):
     if not pg.mixer:
         return None
@@ -112,52 +114,53 @@ def load_sound(file):
         print("Warning, unable to load, %s" % file)
     return None
 
+
 def main():
-    scr = Screen("負ける", (1600, 900), "./ex05/data/pg_bg.jpg")
+    scr = Screen("逃げなよ！こうかとん", (1600, 900), "./ex05/data/pg_bg.jpg")
     r = rm.randint(0, 9)
-    kkt = Bird(f"./ex05/fig/{r}.png", 2.0, (900, 400))
+    kkt = Bird(f"./ex05/fig/{r}.png", 2.0, (900, 400))  # 出力する度に画像が変更される
     bomb = Bomb((255, 0, 0), 10, (+1, +1), scr)
     kfc = Rival("./ex05/data/KFC.jpg", 0.3, (+1, +1), scr)
     chicken = Rival("./ex05/data/chicken_honetsuki.png", 0.3, (+1, +1), scr)
 
     clock =  pg.time.Clock()    
 
-    screem_sound = load_sound("「ぐああーーっ！」.mp3")
-    agemono_sound = load_sound("餃子を揚げる.mp3")
+    screem_sound = load_sound("「ぐああーーっ！」.mp3") # 効果音の設定
+    agemono_sound = load_sound("餃子を揚げる.mp3")  # 効果音の設定
     if pg.mixer:
-        music = os.path.join(main_dir, "data", "漢祭り.mp3")
+        music = os.path.join(main_dir, "data", "漢祭り.mp3")    # BGMの設定
         pg.mixer.music.load(music)
-        pg.mixer.music.set_volume(0.1)
+        pg.mixer.music.set_volume(0.1)  # BGMの音量を下げる
         pg.mixer.music.play(-1)
 
     while True:
-        scr.blit()
+        scr.blit()  #スクリーンの設置
 
         #終了イベントの処理
         for event in pg.event.get():    
             if event.type == pg.QUIT:
                 return
 
-        kkt.update(scr)
+        kkt.update(scr) # こうかとんの設置
 
-        bomb.update(scr)
+        bomb.update(scr)    # 爆弾の設置
 
-        kfc.update(scr)
+        kfc.update(scr) # KFCの設置
 
-        chicken.update(scr)
+        chicken.update(scr) # チキンの設置
 
         key_state = pg.key.get_pressed()
         
-        if kkt.rct.colliderect(bomb.rct): # こうかとんが爆弾と重なったら
+        if kkt.rct.colliderect(bomb.rct): # こうかとんが爆弾と重なったら終わり
             return
         
-        if kkt.rct.colliderect(kfc.rct):   #こうかとんとKFCが重なったら骨付き肉になる
+        if kkt.rct.colliderect(kfc.rct):   #こうかとんとKFCが重なったら悲鳴をあげる
             if pg.mixer:
                 screem_sound.set_volume(0.3)
                 screem_sound.play()
             clock.tick(10)
             
-        if kkt.rct.colliderect(chicken.rct):
+        if kkt.rct.colliderect(chicken.rct):    # こうかとんがチキンと重なったら揚げた音がする
             agemono_sound.set_volume(0.3)
             agemono_sound.play()
             clock.tick(10)
@@ -168,7 +171,7 @@ def main():
 
         pg.display.update()
         clock.tick(1000)
-        agemono_sound.stop()
+        agemono_sound.stop()    # 揚げ物の音をストップ
 
 if __name__ == "__main__":
     pg.init()   #ゲーム初期化

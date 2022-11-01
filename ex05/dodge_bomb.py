@@ -1,6 +1,89 @@
 import random as rm
 import pygame as pg
 import sys
+import os
+
+main_dir = os.path.split(os.path.abspath(__file__))[0]
+
+class Screen:
+    def __init__(self, title, wh, bg_image):
+        pg.display.set_caption(title)       # "逃げろ！こうかとん"    
+        self.sfc = pg.display.set_mode(wh)    # (1600, 900)
+        self.rct = self.sfc.get_rect()
+        self.bgi_sfc = pg.image.load(bg_image)    # "./ex05/pg_bg.jpg"
+        self.bgi_rct = self.bgi_sfc.get_rect()
+
+    def blit(self):
+        self.sfc.blit(self.bgi_sfc, self.bgi_rct)
+
+
+class Bird:
+    key_delta = {
+    pg.K_UP:    [0, -3],
+    pg.K_DOWN:  [0, +3],
+    pg.K_LEFT:  [-3, 0],
+    pg.K_RIGHT: [+3, 0],
+    }
+
+    def __init__(self, image, zoom, xy):
+        sfc = pg.image.load(image)      
+        self.sfc = pg.transform.rotozoom(sfc, 0, zoom)     
+        self.rct = self.sfc.get_rect()
+        self.rct.center = xy        
+
+    def blit(self, scr:Screen):
+        scr.sfc.blit(self.sfc, self.rct)    # 練習3
+
+    def update(self, scr:Screen):
+        key_states = pg.key.get_pressed()
+        for key, delta in Bird.key_delta.items():
+            if key_states[key]:
+                self.rct.centerx += delta[0]
+                self.rct.centery += delta[1]
+                if check_bound(self.rct, scr.rct) != (+1, +1):
+                    self.rct.centerx -= delta[0]
+                    self.rct.centery -= delta[1]
+        self.blit(scr)
+
+
+class Bomb:
+    def __init__(self, color, radius, vxy, scr:Screen):
+        self.sfc = pg.Surface((2*radius, 2*radius)) # 空のSurface
+        self.sfc.set_colorkey((0, 0, 0)) # 四隅の黒い部分を透過させる
+        pg.draw.circle(self.sfc, color, (radius, radius), radius) # 爆弾用の円を描く    # (255, 0, 0)
+        self.rct = self.sfc.get_rect()
+        self.rct.centerx = rm.randint(100, scr.rct.width-100)
+        self.rct.centery = rm.randint(100, scr.rct.height-100)
+        self.vx, self.vy = vxy 
+
+    def blit(self, scr:Screen):
+        scr.sfc.blit(self.sfc, self.rct) 
+
+    def update(self, scr:Screen):
+        self.rct.move_ip(self.vx, self.vy)
+        yoko, tate = check_bound(self.rct, scr.rct)
+        self.vx *= yoko * 1.0005
+        self.vy *= tate * 1.0003
+        self.blit(scr)
+
+class Rival:
+    def __init__(self, image, zoom, xy, scr:Screen):
+        sfc = pg.image.load(image)
+        self.sfc = pg.transform.rotozoom(sfc, 0, zoom)
+        self.rct = self.sfc.get_rect()
+        self.rct.centerx = rm.randint(100, scr.rct.width-100)
+        self.rct.centery = rm.randint(100, scr.rct.height-100)
+        self.x, self.y = xy
+
+    def blit(self, scr:Screen):
+        scr.sfc.blit(self.sfc, self.rct) 
+
+    def update(self, scr:Screen):
+        self.rct.move_ip(self.x, self.y)
+        yoko, tate = check_bound(self.rct, scr.rct)
+        self.x *= yoko * 1.0005
+        self.y *= tate * 1.0003
+        self.blit(scr)
 
 def check_bound(obj_r, scrn_r):
     """
@@ -16,98 +99,54 @@ def check_bound(obj_r, scrn_r):
         tate = -1
     return yoko, tate
 
-# class Screen:
-#     def __init__(self, title, width, height, bg_file):
-        
+def load_sound(file):
+    if not pg.mixer:
+        return None
+    file = os.path.join(main_dir, "data", file)
+    try:
+        sound = pg.mixer.Sound(file)
+        return sound
+    except pg.error:
+        print("Warning, unable to load, %s" % file)
+    return None
 
 def main():
-    pg.display.set_caption("KFCから逃げろやｯｯ!!こうかとん")
-    scrn = pg.display.set_mode((1600, 900))
-    scrn_r = scrn.get_rect()
+    # pg.display.set_caption("KFCから逃げろやｯｯ!!こうかとん")
+    # scrn = pg.display.set_mode((1600, 900))
+    # scrn_r = scrn.get_rect()
+    scr = Screen("負ける", (1600, 900), "./ex05/data/pg_bg.jpg")
     r = rm.randint(0, 9)
-    
-    back = pg.image.load("./ex05/pg_bg.jpg")        #背景画像
-    back_r = back.get_rect()
+    kkt = Bird(f"./ex05/fig/{r}.png", 2.0, (900, 400))
+    bomb = Bomb((255, 0, 0), 10, (+1, +1), scr)
+    kfc = Rival("./ex05/data/KFC.jpg", 0.3, (+1, +1), scr)
+    #chicken = Rival("./ex05/data/chicken_honetsuki.png", (+1, +1), 0.8, scr)
 
-    tori = pg.image.load(f"./ex05/fig/{r}.png")     #こうかとん画像
-    tori = pg.transform.rotozoom(tori, 0, 2)
-    tori_r = tori.get_rect()
-    tori_r.center = 900, 400
-
-    kfc = pg.image.load("./ex05/KFC.jpg")           #カーネルサンダース画像
-    kfc = pg.transform.rotozoom(kfc, 0, 0.3)
-    kfc_r = kfc.get_rect()
-    kfc_r.centerx, kfc_r.centery = rm.randint(100, scrn_r.width-100), rm.randint(100, scrn_r.height-100)
-
-    chicken = pg.image.load("./ex05/chicken_honetsuki.png")
-    chicken = pg.transform.rotozoom(chicken, 0, 0.8)
-    c_r = chicken.get_rect()
-
-    bomb = pg.Surface((20, 20))
-    pg.draw.circle(bomb, (255, 0, 0), (10, 10), 10) #円を描く
-    bomb.set_colorkey((0, 0, 0))                    #四隅の黒い部分を透過させる
-    bomb_r = bomb.get_rect()
-    bomb_r.centerx, bomb_r.centery = rm.randint(100, scrn_r.width-100), rm.randint(100, scrn_r.height-100)
-
-    vx, vy = +1, +1
-    cx, cy = +1, +1
-
+    # chicken = pg.image.load("./ex05/data/chicken_honetsuki.png")
+    # chicken = pg.transform.rotozoom(chicken, 0, 0.8)
+    # c_r = chicken.get_rect()
     clock =  pg.time.Clock()    
 
     while True:
-        scrn.blit(back, back_r)         #スクリーンに背景を貼る    
+        scr.blit()
 
         #終了イベントの処理
         for event in pg.event.get():    
             if event.type == pg.QUIT:
                 return
 
+        kkt.update(scr)
+
+        bomb.update(scr)
+
+        kfc.update(scr)
+
         key_state = pg.key.get_pressed()
-
-        if key_state[pg.K_UP]:          #こうかとんの縦座標を-3
-            tori_r.centery -= 3
-        if key_state[pg.K_DOWN]:        #こうかとんの縦座標を+3
-            tori_r.centery += 3
-        if key_state[pg.K_LEFT]:        #こうかとんの横座標を-3
-            tori_r.centerx -= 3
-        if key_state[pg.K_RIGHT]:       #こうかとんの横座標を+3
-            tori_r.centerx += 3
         
-        yoko, tate = check_bound(tori_r, scrn_r)
-        if yoko == -1:
-            if key_state[pg.K_LEFT]:
-                tori_r.centerx += 3
-            if key_state[pg.K_RIGHT]:
-                tori_r.centerx -= 3
-
-        if tate == -1:
-            if key_state[pg.K_UP]:
-                tori_r.centery += 3
-            if key_state[pg.K_DOWN]:
-                tori_r.centery -= 3
-        scrn.blit(tori, tori_r)         #スクリーンにこうかとんを貼る
-
-        yoko, tate = check_bound(bomb_r, scrn_r)
-        vx *= yoko
-        vx *= 1.0005                   #横方向に加速 
-        vy *= tate
-        vy *= 1.0003                    #縦方向に加速
-        bomb_r.move_ip(vx, vy)
-        scrn.blit(bomb, bomb_r)         #スクリーンに爆弾を貼る
-        
-        yoko, tate = check_bound(kfc_r, scrn_r)
-        cx *= yoko
-        cx *= 1.0004                    #横方向に加速
-        cy *= tate
-        cy *= 1.0003                    #縦方向に加速
-        kfc_r.move_ip(cx, cy)
-        scrn.blit(kfc, kfc_r)           #スクリーンにKFCを貼る
-        
-        if tori_r.colliderect(bomb_r):  #こうかとんと爆弾が重なったら終了
+        if kkt.rct.colliderect(bomb.rct): # こうかとんrctが爆弾rctと重なったら
             return
         
-        if tori_r.colliderect(kfc_r):   #こうかとんとKFCが重なったら骨付き肉になる
-            scrn.blit(chicken, (tori_r.centerx - 100, tori_r.centery - 100))
+        if kkt.rct.colliderect(kfc.rct):   #こうかとんとKFCが重なったら骨付き肉になる
+            #chicken.blit() # chicken, (kkt.rct.centerx - 100, kkt.rct.centery - 100)
             clock.tick(10)
             
 

@@ -269,9 +269,9 @@ def main(winstyle=0):
 
     # load the sound effects
     boom_sound = load_sound("boom.wav")
-    shoot_sound = load_sound("car_door.wav")
+    shoot_sound = load_sound("boom.wav")
     if pg.mixer:
-        music = os.path.join(main_dir, "data", "house_lo.wav")
+        music = os.path.join(main_dir, "data", "漢祭り.mp3")
         pg.mixer.music.load(music)
         pg.mixer.music.play(-1)
 

@@ -3,6 +3,7 @@ import pygame as pg
 import sys
 import os
 
+# パス名の
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 # 画面を生成するクラス
@@ -48,6 +49,9 @@ class Bird:
 
 # 爆弾の設定を行うクラス
 class Bomb:
+    bai1 = 1.0005
+    bai2 = 1.0003
+
     def __init__(self, color, radius, vxy, scr:Screen):
         self.sfc = pg.Surface((2*radius, 2*radius)) # 空のSurface
         self.sfc.set_colorkey((0, 0, 0)) # 四隅の黒い部分を透過させる
@@ -63,12 +67,15 @@ class Bomb:
     def update(self, scr:Screen):
         self.rct.move_ip(self.vx, self.vy)
         yoko, tate = check_bound(self.rct, scr.rct)
-        self.vx *= yoko * 1.0005
-        self.vy *= tate * 1.0003
+        self.vx *= yoko * Bomb.bai1
+        self.vy *= tate * Bomb.bai2
         self.blit(scr)
 
 # 爆弾以外の動く物体の設定を行うクラス
 class Rival:
+    bai1 = 1.0005
+    bai2 = 1.0003
+
     def __init__(self, image, zoom, xy, scr:Screen):
         sfc = pg.image.load(image)
         self.sfc = pg.transform.rotozoom(sfc, 0, zoom)
@@ -83,8 +90,8 @@ class Rival:
     def update(self, scr:Screen):
         self.rct.move_ip(self.x, self.y)
         yoko, tate = check_bound(self.rct, scr.rct)
-        self.x *= yoko * 1.0005
-        self.y *= tate * 1.0003
+        self.x *= yoko * Bomb.bai1
+        self.y *= tate * Bomb.bai2
         self.blit(scr)
 
 
@@ -156,12 +163,12 @@ def main():
         
         if kkt.rct.colliderect(kfc.rct):   #こうかとんとKFCが重なったら悲鳴をあげる
             if pg.mixer:
-                screem_sound.set_volume(0.3)
+                screem_sound.set_volume(0.3)    # 効果音の音量を下げる
                 screem_sound.play()
             clock.tick(10)
             
-        if kkt.rct.colliderect(chicken.rct):    # こうかとんがチキンと重なったら揚げた音がする
-            agemono_sound.set_volume(0.3)
+        if kkt.rct.colliderect(chicken.rct):    # こうかとんがチキンと重なったら揚げものの音がする
+            agemono_sound.set_volume(0.3)   # 効果音の音量を下げる
             agemono_sound.play()
             clock.tick(10)
 
@@ -171,7 +178,7 @@ def main():
 
         pg.display.update()
         clock.tick(1000)
-        agemono_sound.stop()    # 揚げ物の音をストップ
+        agemono_sound.stop()    # チキンから離れたら、揚げ物の音をストップ
 
 if __name__ == "__main__":
     pg.init()   #ゲーム初期化

@@ -12,8 +12,12 @@ class Music:
     def set_volume(self, vol):
         self.sound.set_volume(vol)
 
-    def play(self):
-        self.sound.play()
+    def play(self, count = 0):
+        self.sound.play(count)
+
+    def fadeout(self, value=400):
+        self.sound.fadeout(value)
+
 
 class Screen:
     def __init__(self, title, wh, bgimg):
@@ -169,6 +173,15 @@ def main():
     clock = pg.time.Clock()
 
     pon = Music("pon.wav")
+    pon.set_volume(0.5)
+
+    stage = Music("socks.mp3")
+    stage.set_volume(0.05)
+    stage.play(10)
+
+    boss = Music("boss_battle2.wav")
+    boss.set_volume(0.2)
+    # boss.play(10)
 
     while True:
         scr.blit()
@@ -200,6 +213,10 @@ def main():
             for attack in atk: # attackはAttackクラスインスタンス
                 if enemy.rct.colliderect(attack.rct):
                     # 攻撃が敵にあったたら敵を消す
+                    explode = Music(f"explode{randint(1,2)}.mp3")
+                    explode.set_volume(1)
+                    explode.play()
+                    explode.fadeout()
                     ene.remove(enemy)
                     atk.remove(attack)
                     break
@@ -218,7 +235,6 @@ def main():
         if key_states[pg.K_SPACE]: # スペースキーを押している間
             # 全方位に攻撃が出る       
             if pg.time.get_ticks() % 20 == 0:
-                pon.set_volume(0.5)
                 pon.play()
                 atk.append(Attack(-11000, kkt.rct.centerx, kkt.rct.centery))
 

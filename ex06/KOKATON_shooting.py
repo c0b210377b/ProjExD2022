@@ -12,8 +12,8 @@ class Screen:
         self.bg_x = 0
 
     def blit(self):
-        self.bg_x = (self.bg_x + 3) % 480
-        self.sfc.blit(self.bg_sfc, [self.bg_x-480, 0]) # 練習2
+        self.bg_x = (self.bg_x + 3) % 900
+        self.sfc.blit(self.bg_sfc, [self.bg_x-900, 0]) # 練習2
         self.sfc.blit(self.bg_sfc, [self.bg_x, 0])
 
 
@@ -103,7 +103,7 @@ class Enemy: # 敵クラス
 
 
 class Attack: # 攻撃クラス
-    def __init__(self, color, radius, vxy, fx, fy):
+    def __init__(self, vx, fx, fy):
         """
         color：玉の色
         radius：玉の半径
@@ -111,29 +111,25 @@ class Attack: # 攻撃クラス
         fx：玉のx軸初期位置
         fy：玉のy軸初期位置
         """
-        self.sfc = pg.Surface((radius*2, radius*2)) # 空のSurface
-        self.sfc.set_colorkey((0, 0, 0)) # 四隅の黒い部分を透過させる
-        pg.draw.circle(self.sfc, color, (radius,radius), radius) # 円を描く
+    
+        sfc = pg.image.load("./ex06/fig/egg_toumei.png")
+        self.sfc = pg.transform.rotozoom(sfc, 0, 0.2)
         self.rct = self.sfc.get_rect() # 玉のrect取得
         # 初期位置
         self.rct.centerx = fx
         self.rct.centery = fy
         # 移動の変数
-        self.vx, self.vy = vxy[0] * 0.001 , vxy[1] * 0.001
+        self.vx= vx * 0.001
         self.move = 0 # 玉の移動距離
 
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
 
     def update(self,scr:Screen):
-        self.rct.centerx += self.vx
-        self.rct.centery += self.vy # 玉の移動
-        # 壁判定
-        yoko, tate = check_bound(self.rct, scr.rct)
-        self.vx *= yoko
-        self.vy *= tate
-        self.move += 1 # 玉の移動距離
+        self.rct.centerx += self.vx # 玉の移動
+        self.move += 0.7  # 玉の移動距離
         self.blit(scr)
+
 
 
 def check_bound(obj_rct, scr_rct):
@@ -152,7 +148,7 @@ def check_bound(obj_rct, scr_rct):
 
 def main():
     scr = Screen("逃げろ！こうかとん", (1600,900), "./ex06/fig/pg_bg.jpg")
-    kkt = Bird("./ex06/fig/6.png", 1.0, (900, 400))
+    kkt = Bird("./ex06/fig/6.png", 1.0, (1500, 450))
 
     # Bombクラスインスタンスのリスト
     bkd = []
@@ -161,7 +157,7 @@ def main():
     ene = [Enemy("./ex06/fig/1.png", 1.0, (randint(0,900),randint(0,900)), (randint(-2,2),randint(-2,2)))]
 
     # Attackクラスインスタンスのリスト
-    atk = []
+    atk = [] 
 
     clock = pg.time.Clock()
     while True:
@@ -195,6 +191,7 @@ def main():
                 if enemy.rct.colliderect(attack.rct):
                     # 攻撃が敵にあったたら敵を消す
                     ene.remove(enemy)
+                    atk.remove(attack)
                     break
 
         for bomb in bkd: # bombは# Bombクラスインスタンス
@@ -209,8 +206,9 @@ def main():
 
         key_states = pg.key.get_pressed()
         if key_states[pg.K_SPACE]: # スペースキーを押している間
-            # 全方位に攻撃が出る
-            atk.append(Attack((0,255,0), 10, (randint(-3000,3000),randint(-3000,3000)), kkt.rct.centerx, kkt.rct.centery))
+            # 全方位に攻撃が出る      
+            if pg.time.get_ticks() % 10 == 0:
+                atk.append(Attack(-11000, kkt.rct.centerx, kkt.rct.centery))
 
         pg.display.update()
         clock.tick(1000)

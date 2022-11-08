@@ -1,6 +1,19 @@
-import pygame as pg
+import os
 import sys
+import pygame as pg
 from random import randint
+
+class Music:
+    def __init__(self, file):
+        main_dir = os.path.split(os.path.abspath(__file__))[0]
+        file = os.path.join(main_dir, "music", file)
+        self.sound = pg.mixer.Sound(file)
+    
+    def set_volume(self, vol):
+        self.sound.set_volume(vol)
+
+    def play(self):
+        self.sound.play()
 
 class Screen:
     def __init__(self, title, wh, bgimg):
@@ -63,12 +76,6 @@ class Bomb:
 
     def update(self,scr:Screen):
         self.rct.move_ip(self.vx, self.vy)
-        yoko, tate = check_bound(self.rct, scr.rct)
-        self.vx *= yoko
-        self.vy *= tate
-        if yoko == -1 or tate == -1: # もし跳ね返ったら
-            self.count_bound() # 跳ね返りカウントを呼び出す
-
         self.blit(scr)
 
     def count_bound(self): # 跳ね返りカウント関数
@@ -153,13 +160,16 @@ def main():
     # Bombクラスインスタンスのリスト
     bkd = []
 
-    # Enemyクラスインスタンスのリスト
-    ene = [Enemy("./ex06/fig/1.png", 1.0, (randint(0,900),randint(0,900)), (randint(-2,2),randint(-2,2)))]
+    # Enemyクラスインスタンスのリスト 
+    ene = [Enemy("./ex06/fig/KFC.jpg", 0.3, (randint(0,900),randint(0,900)), (randint(-2,2),randint(-2,2)))]
 
     # Attackクラスインスタンスのリスト
     atk = [] 
 
     clock = pg.time.Clock()
+
+    pon = Music("pon.wav")
+
     while True:
         scr.blit()
         for event in pg.event.get():
@@ -174,8 +184,8 @@ def main():
             attack.update(scr) # 玉の更新
                  
         if randint(0,100) == 0: # ランダムに
-            # 敵の追加
-            ene.append(Enemy("./ex06/fig/1.png", 1.0, (randint(0,900),randint(0,900)),(randint(-2,2),randint(-2,2))))
+            # 敵の追加  
+            ene.append(Enemy("./ex06/fig/KFC.jpg", 0.3, (randint(0,900),randint(0,900)),(randint(-2,2),randint(-2,2))))
 
         for enemy in ene: # enemyはEnemyクラスインスタンス
             enemy.update(scr) # 敵の更新
@@ -206,8 +216,10 @@ def main():
 
         key_states = pg.key.get_pressed()
         if key_states[pg.K_SPACE]: # スペースキーを押している間
-            # 全方位に攻撃が出る      
-            if pg.time.get_ticks() % 10 == 0:
+            # 全方位に攻撃が出る       
+            if pg.time.get_ticks() % 20 == 0:
+                pon.set_volume(0.5)
+                pon.play()
                 atk.append(Attack(-11000, kkt.rct.centerx, kkt.rct.centery))
 
         pg.display.update()

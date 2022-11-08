@@ -179,6 +179,10 @@ def main():
     stage.set_volume(0.05)
     stage.play(10)
 
+    boss = Music("boss_battle2.wav")    # ボス用のBGM
+    boss.set_volume(0.2)
+    # boss.play(10)
+
     while True:
         scr.blit()
         for event in pg.event.get():
@@ -208,7 +212,7 @@ def main():
 
             for attack in atk: # attackはAttackクラスインスタンス
                 if enemy.rct.colliderect(attack.rct):
-                    # 攻撃が敵にあったたら敵を消す
+                    # 攻撃が敵にあたったら敵を消す
                     explode = Music(f"explode{randint(1,2)}.mp3")   # 敵を撃破した時の効果音
                     explode.set_volume(1)
                     explode.play()

@@ -3,19 +3,20 @@ import sys
 import pygame as pg
 from random import randint
 
-class Music:
+class Music:    # BGM、効果音に関するクラス
     def __init__(self, file):
         main_dir = os.path.split(os.path.abspath(__file__))[0]
-        file = os.path.join(main_dir, "music", file)
-        self.sound = pg.mixer.Sound(file)
+        # musicフォルダの中にある音楽ファイルであるか確認する
+        file = os.path.join(main_dir, "music", file)    
+        self.sound = pg.mixer.Sound(file)       # 音楽ファイルをロードする
     
-    def set_volume(self, vol):
+    def set_volume(self, vol):  # 音楽のボリュームを下げる
         self.sound.set_volume(vol)
 
-    def play(self, count = 0):
+    def play(self, count = 0):  # 音楽を再生させる
         self.sound.play(count)
 
-    def fadeout(self, value=400):
+    def fadeout(self, value=400):   # 音楽をフェードアウトさせる
         self.sound.fadeout(value)
 
 
@@ -30,7 +31,8 @@ class Screen:
 
     def blit(self):
         self.bg_x = (self.bg_x + 3) % 900
-        self.sfc.blit(self.bg_sfc, [self.bg_x-900, 0]) # 練習2
+        # 背景画像をスクロールさせる
+        self.sfc.blit(self.bg_sfc, [self.bg_x-900, 0]) 
         self.sfc.blit(self.bg_sfc, [self.bg_x, 0])
 
 
@@ -57,8 +59,7 @@ class Bird:
             if key_states[key]:
                 self.rct.centerx += delta[0]
                 self.rct.centery += delta[1]
-                # 練習7
-                if check_bound(self.rct, scr.rct) != (+1, +1):
+                if check_bound(self.rct, scr .rct) != (+1, +1):
                     self.rct.centerx -= delta[0]
                     self.rct.centery -= delta[1]
         self.blit(scr)
@@ -142,7 +143,6 @@ class Attack: # 攻撃クラス
         self.blit(scr)
 
 
-
 def check_bound(obj_rct, scr_rct):
     """
     obj_rct：こうかとんrct，または，爆弾rct
@@ -158,30 +158,26 @@ def check_bound(obj_rct, scr_rct):
 
 
 def main():
-    scr = Screen("逃げろ！こうかとん", (1600,900), "./ex06/fig/pg_bg.jpg")
+    scr = Screen("こうかとんシューティング", (1600,900), "./ex06/fig/pg_bg.jpg")
     kkt = Bird("./ex06/fig/6.png", 1.0, (1500, 450))
 
     # Bombクラスインスタンスのリスト
     bkd = []
 
     # Enemyクラスインスタンスのリスト 
-    ene = [Enemy("./ex06/fig/KFC.jpg", 0.3, (randint(0,900),randint(0,900)), (randint(-2,2),randint(-2,2)))]
+    ene = [Enemy("./ex06/fig/alien1.gif", 1, (randint(0,900),randint(0,900)), (randint(-2,2),randint(-2,2)))]
 
     # Attackクラスインスタンスのリスト
     atk = [] 
 
     clock = pg.time.Clock()
 
-    pon = Music("pon.wav")
+    pon = Music("pon.wav")  # こうかとんが攻撃する時の効果音
     pon.set_volume(0.5)
 
-    stage = Music("socks.mp3")
+    stage = Music("socks.mp3")  # BGM
     stage.set_volume(0.05)
     stage.play(10)
-
-    boss = Music("boss_battle2.wav")
-    boss.set_volume(0.2)
-    # boss.play(10)
 
     while True:
         scr.blit()
@@ -198,7 +194,7 @@ def main():
                  
         if randint(0,100) == 0: # ランダムに
             # 敵の追加  
-            ene.append(Enemy("./ex06/fig/KFC.jpg", 0.3, (randint(0,900),randint(0,900)),(randint(-2,2),randint(-2,2))))
+            ene.append(Enemy("./ex06/fig/alien1.gif", 1, (randint(0,900),randint(0,900)),(randint(-2,2),randint(-2,2))))
 
         for enemy in ene: # enemyはEnemyクラスインスタンス
             enemy.update(scr) # 敵の更新
@@ -213,7 +209,7 @@ def main():
             for attack in atk: # attackはAttackクラスインスタンス
                 if enemy.rct.colliderect(attack.rct):
                     # 攻撃が敵にあったたら敵を消す
-                    explode = Music(f"explode{randint(1,2)}.mp3")
+                    explode = Music(f"explode{randint(1,2)}.mp3")   # 敵を撃破した時の効果音
                     explode.set_volume(1)
                     explode.play()
                     explode.fadeout()

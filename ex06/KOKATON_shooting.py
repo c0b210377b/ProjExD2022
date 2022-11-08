@@ -4,15 +4,17 @@ from random import randint
 
 class Screen:
     def __init__(self, title, wh, bgimg):
-        # 練習1
         pg.display.set_caption(title)
         self.sfc = pg.display.set_mode(wh)
         self.rct = self.sfc.get_rect()
         self.bg_sfc = pg.image.load(bgimg)
         self.bg_rct = self.bg_sfc.get_rect()
+        self.bg_x = 0
 
     def blit(self):
-        self.sfc.blit(self.bg_sfc, self.bg_rct) # 練習2
+        self.bg_x = (self.bg_x + 3) % 480
+        self.sfc.blit(self.bg_sfc, [self.bg_x-480, 0]) # 練習2
+        self.sfc.blit(self.bg_sfc, [self.bg_x, 0])
 
 
 class Bird:
@@ -24,7 +26,6 @@ class Bird:
     }
 
     def __init__(self, img, zoom, xy):
-        # 練習3
         sfc = pg.image.load(img)
         self.sfc = pg.transform.rotozoom(sfc, 0, zoom)
         self.rct = self.sfc.get_rect()
@@ -150,14 +151,14 @@ def check_bound(obj_rct, scr_rct):
 
 
 def main():
-    scr = Screen("逃げろ！こうかとん", (1600,900), "fig/pg_bg.jpg")
-    kkt = Bird("fig/6.png", 1.0, (900, 400))
+    scr = Screen("逃げろ！こうかとん", (1600,900), "./ex06/fig/pg_bg.jpg")
+    kkt = Bird("./ex06/fig/6.png", 1.0, (900, 400))
 
     # Bombクラスインスタンスのリスト
     bkd = []
 
     # Enemyクラスインスタンスのリスト
-    ene = [Enemy("fig/1.png", 1.0, (randint(0,900),randint(0,900)), (randint(-2,2),randint(-2,2)))]
+    ene = [Enemy("./ex06/fig/1.png", 1.0, (randint(0,900),randint(0,900)), (randint(-2,2),randint(-2,2)))]
 
     # Attackクラスインスタンスのリスト
     atk = []
@@ -178,7 +179,7 @@ def main():
                  
         if randint(0,100) == 0: # ランダムに
             # 敵の追加
-            ene.append(Enemy("fig/1.png", 1.0, (randint(0,900),randint(0,900)),(randint(-2,2),randint(-2,2))))
+            ene.append(Enemy("./ex06/fig/1.png", 1.0, (randint(0,900),randint(0,900)),(randint(-2,2),randint(-2,2))))
 
         for enemy in ene: # enemyはEnemyクラスインスタンス
             enemy.update(scr) # 敵の更新

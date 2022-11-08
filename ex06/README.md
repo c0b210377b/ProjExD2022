@@ -8,3 +8,5 @@
 - SPACEキーでこうかとんが卵を飛ばして攻撃する
 ### ToDo
 - [] ボスキャラを追加して、クリア条件を増やす
+### 参考サイトのURL
+- グッドラックネットライフ (https://goodlucknetlife.com/pygame-shooting-background/)

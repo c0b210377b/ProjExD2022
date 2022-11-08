@@ -219,18 +219,13 @@ def main():
 
         for bomb in bkd: # bombは# Bombクラスインスタンス
             bomb.update(scr) # 爆弾の更新
-            if bomb.bound == 3: # もし3回跳ね返ったら
-                # 爆弾が消える
-                bkd.remove(bomb)
-                break
 
             if kkt.rct.colliderect(bomb.rct):
                 return
 
         key_states = pg.key.get_pressed()
-        if key_states[pg.K_SPACE]: # スペースキーを押している間
-            # 全方位に攻撃が出る       
-            if pg.time.get_ticks() % 20 == 0:
+        if key_states[pg.K_SPACE]: # スペースキーを押している間    
+            if pg.time.get_ticks() % 20 == 0:   # ミリ秒単位で卵を発射できる
                 pon.play()
                 atk.append(Attack(-11000, kkt.rct.centerx, kkt.rct.centery))
 
